@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Browser</title>
+    <style>
+        img.svg {
+            margin: 10px;
+            height: 40px;
+            width: 40px;
+        }
+
+        input.search {
+            padding: 5px;
+            width: 100% !important;
+            max-width: 100%;
+            position: relative;
+            display: block;
+            font-size: 26px;
+        }
+
+        .row {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container body-content">
+        <div class="row">
+            <br />
+            <br />
+            @Html.TextBox("search", "", new { placeholder = "Search...", @class = "search js-search-icon" })<br />
+            <div class="js-icons">
+
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script>
+        $(function () {
+            $('.js-search-icon').on('keyup', function () {
+                var val = $(this).val();
+                if (val.length == 1) {
+                    return;
+                }
+                $.get("/home/search?query=" + encodeURI(val), function (data) {
+                    var template = '<img src="/home/showimage/?path={path}" class="svg" alt="{path}" title="{path}" />';
+                    var result = "";
+                    $.each(data, function () {
+                        result += template
+                            .replace(/{path}/g, this);
+                    });
+
+                    if (data.length === 0) {
+                        result = "No icons found, sorry...";
+                    }
+
+                    $('.js-icons').html(result);
+                });
+            }).trigger('keyup').focus();
+        })
+    </script>
+</body>
+</html>
